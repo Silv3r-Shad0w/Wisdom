@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Burger Wisdom</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f4f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container { width: 100%; max-width: 600px; }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .category-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+
+    .cat-btn {
+      padding: 4px 14px;
+      border-radius: 99px;
+      font-size: 13px;
+      border: 0.5px solid #ccc;
+      background: #ececec;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .cat-btn:hover { background: #e0e0e0; }
+    .cat-btn.active { border-color: #3a8fd4; color: #185FA5; background: #E6F1FB; }
+
+    .quote-card {
+      background: #fff;
+      border: 0.5px solid #ddd;
+      border-radius: 12px;
+      padding: 2rem 2rem 1.5rem;
+      margin: 1rem 0 1.5rem;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .quote-mark {
+      font-size: 64px;
+      line-height: 1;
+      color: #ccc;
+      font-family: Georgia, serif;
+      position: absolute;
+      top: 0.75rem;
+      left: 1.5rem;
+    }
+
+    .quote-text {
+      font-size: 18px;
+      font-family: Georgia, serif;
+      color: #1a1a1a;
+      line-height: 1.7;
+      margin-top: 1.5rem;
+      font-style: italic;
+    }
+
+    .quote-author { margin-top: 1.25rem; display: flex; align-items: center; gap: 10px; }
+
+    .author-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 500; flex-shrink: 0;
+    }
+
+    .author-name { font-size: 14px; font-weight: 500; color: #1a1a1a; }
+    .author-title { font-size: 12px; color: #777; }
+
+    .burger-btn {
+      width: 100%; cursor: pointer; border: none; background: none;
+      padding: 0; display: flex; flex-direction: column; align-items: center;
+      gap: 0; transform-origin: center bottom;
+    }
+    .burger-btn.squish { animation: squish 0.35s cubic-bezier(.36,.07,.19,.97); }
+    @keyframes squish {
+      0%   { transform: scaleY(1)    scaleX(1); }
+      30%  { transform: scaleY(0.45) scaleX(1.2); }
+      60%  { transform: scaleY(1.1)  scaleX(0.95); }
+      80%  { transform: scaleY(0.95) scaleX(1.02); }
+      100% { transform: scaleY(1)    scaleX(1); }
+    }
+
+    .bun-top {
+      width: 100%; height: 36px; background: #D4821A;
+      border-radius: 80px 80px 0 0; position: relative;
+    }
+    .sesame { width: 7px; height: 4px; background: #F5C97A; border-radius: 50%; position: absolute; }
+    .lettuce {
+      width: 100%; height: 14px; background: #4CAF50;
+      clip-path: polygon(0% 60%, 4% 20%, 8% 70%, 12% 15%, 16% 65%, 20% 20%, 24% 70%, 28% 15%, 32% 65%, 36% 20%, 40% 70%, 44% 15%, 48% 65%, 52% 20%, 56% 70%, 60% 15%, 64% 65%, 68% 20%, 72% 70%, 76% 15%, 80% 65%, 84% 20%, 88% 70%, 92% 15%, 96% 65%, 100% 30%, 100% 100%, 0% 100%);
+    }
+    .tomato { width: 100%; height: 10px; background: #E53935; }
+    .cheese { width: calc(100% + 8px); height: 10px; background: #FDD835; margin-left: -4px; clip-path: polygon(0 0, 100% 0, 96% 100%, 4% 100%); }
+    .patty { width: 100%; height: 22px; background: #6D3B1E; border-radius: 3px; }
+    .bun-bottom { width: 100%; height: 22px; background: #C47A15; border-radius: 0 0 14px 14px; }
+    .burger-label { margin-top: 8px; font-size: 14px; font-weight: 500; color: #555; letter-spacing: 0.02em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Burger Wisdom</h1>
+    <div class="category-bar" id="cats"></div>
+    <div class="quote-card">
+      <div class="quote-mark">"</div>
+      <div class="quote-text" id="qt">Click the burger below to receive wisdom.</div>
+      <div class="quote-author" id="qa" style="display:none">
+        <div class="author-avatar" id="av"></div>
+        <div>
+          <div class="author-name" id="an"></div>
+          <div class="author-title" id="at"></div>
+        </div>
+      </div>
+    </div>
+    <button class="burger-btn" id="burgerBtn" onclick="handleClick()">
+      <div class="bun-top">
+        <div class="sesame" style="top:8px;left:22%"></div>
+        <div class="sesame" style="top:12px;left:38%"></div>
+        <div class="sesame" style="top:6px;left:55%"></div>
+        <div class="sesame" style="top:13px;left:70%"></div>
+        <div class="sesame" style="top:7px;left:82%"></div>
+      </div>
+      <div class="lettuce"></div>
+      <div class="tomato"></div>
+      <div class="cheese"></div>
+      <div class="patty"></div>
+      <div class="bun-bottom"></div>
+      <div class="burger-label">give me wisdom</div>
+    </button>
+  </div>
+
+  <script>
+    const quotes = {
+      life: [
+        ["The early bird gets the worm, but the second mouse gets the cheese.", "Linda Fishburne", "Life Coach & Cheese Enthusiast"],
+        ["Life is like a sandwich. The more you add to it, the harder it is to fit in your mouth.", "Dr. Marcus Blobbs", "Professor of Sandwich Philosophy"],
+        ["You miss 100% of the naps you don't take.", "Wayne Gretzky's cousin", "Professional Napper"],
+        ["Never put off until tomorrow what you can also not do today.", "Helena Snooze", "Procrastination Expert"],
+        ["The meaning of life is simply to outlive your houseplants.", "Gary Fern", "Plant Funeral Director"],
+        ["Follow your dreams, unless your dreams involve running — then walk briskly.", "Coach T. Redd", "Motivational Slow-Jogger"],
+        ["Life is short. Buy the shoes. Eat the cake. Skip the salad.", "Donna Carbs", "Nutritional Freedom Fighter"],
+        ["You only live once, but if you do it right, once is probably still not enough.", "Phil Regret", "Existential Life Planner"],
+        ["The secret to a long life is to not die.", "Dr. Bernard Obvious", "Professor of Survival Studies"],
+        ["Life is like a toilet roll — the closer you get to the end, the faster it goes.", "Terry Spindle", "Bathroom Philosopher"],
+        ["Every day is a gift. Some days the gift is a pair of socks.", "Aunt Bertha", "Underwhelming Optimist"],
+        ["If life gives you lemons, check if life has a receipt.", "Gerald Citrus", "Consumer Rights Advocate"],
+        ["The best time to start was yesterday. The second best time is after coffee.", "Maxine Brew", "Caffeinated Life Coach"],
+        ["You are exactly where you need to be, unless you need to be somewhere else.", "GPS Sandra", "Spiritual Navigation Expert"],
+        ["Live every day like it's your last — terrified and calling your mom.", "Kevin Panic", "Daily Mortality Reminder"],
+        ["Home is where the WiFi is.", "Roger Signal", "Digital Nomad Philosopher"],
+        ["Do what makes you happy, unless what makes you happy is other people's sadness.", "Dr. Ethical Ed", "Conditional Joy Consultant"],
+        ["Not all those who wander are lost — some are just bad at Google Maps.", "Brenda Directions", "Cartographic Philosopher"],
+        ["A journey of a thousand miles begins with finding your keys.", "Marco Pockets", "Exploration Delay Expert"],
+        ["Everything happens for a reason. Sometimes the reason is you made a bad decision.", "Candice Hindsight", "Retroactive Life Analyst"],
+        ["Be the person your dog thinks you are — slightly better than average.", "Roger Woof", "Canine Expectations Coach"],
+        ["You can't pour from an empty cup, but you can lick the inside.", "Tanya Resourceful", "Beverage Efficiency Expert"],
+        ["Age is just a number. An increasingly large, terrifying number.", "Dr. Gerald Birthdate", "Numerical Aging Specialist"],
+        ["Live, laugh, and occasionally read the terms and conditions.", "Patricia Checkbox", "Digital Wellness Advocate"],
+        ["If you're going through hell, keep going — but maybe bring snacks.", "Dante's nutritionist", "Infernal Snack Planner"],
+      ],
+      success: [
+        ["Success is 10% inspiration, 90% pretending you know what you're doing in meetings.", "Brad Confuse", "Fortune 500 CEO"],
+        ["The secret to success is to look very busy when your boss walks by.", "Patricia Slackoff", "Award-Winning Employee"],
+        ["Winners never quit... unless the WiFi goes down.", "Kevin Disconnect", "Remote Work Guru"],
+        ["Believe you can and you're halfway there. The other half is someone else's spreadsheet.", "Theodore Wrongsheet", "Excel Visionary"],
+        ["Work smarter, not harder. Then take credit for someone else working harder.", "Chad Promoted", "Director of Vibes"],
+        ["To succeed, you must first believe that cereal is a valid dinner.", "Sandra Crunch", "Startup Founder"],
+        ["The elevator to success is out of order. Take the stairs — or just wait for the elevator to be fixed.", "Larry Maintenance", "Corporate Patience Coach"],
+        ["Dream big. Start small. Blame others when it doesn't work out.", "Todd Excuses", "Accountability Avoidance Expert"],
+        ["If at first you don't succeed, redefine success.", "Dr. Flexible Standards", "Adaptive Goal Consultant"],
+        ["The road to success is always under construction. And there's no GPS.", "Harriet Detour", "Career Navigation Specialist"],
+        ["Hard work never killed anybody, but why take the risk?", "Ronald Comfortable", "Occupational Safety Philosopher"],
+        ["Success is not final, failure is not fatal, but your Wi-Fi going out during a presentation is both.", "Karen Buffering", "Remote Presentation Survivor"],
+        ["It takes 10,000 hours to master a skill. It takes 10 minutes to Google someone who already has.", "Simon Shortcut", "Efficiency Optimization Guru"],
+        ["Behind every successful person is a substantial amount of coffee and a very understanding chair.", "Dr. Lumbar Support", "Ergonomic Success Coach"],
+        ["The early bird gets the worm, but who wants worms? Sleep in and get pancakes.", "Brenda Brunch", "Strategic Morning Avoidance Expert"],
+        ["Always give 100% at work: 30% Monday, 25% Tuesday, 20% Wednesday, 15% Thursday, 10% Friday.", "Barry Percentages", "Weekly Effort Distribution Manager"],
+        ["Fake it till you make it — then fake it some more because making it is also confusing.", "Melissa Imposter", "Authenticity Avoidance Coach"],
+        ["A winner is just a loser who tried one more time and got lucky.", "Phil Statistics", "Probabilistic Motivation Expert"],
+        ["Success is like a fart — it only bothers people when it's not their own.", "Gerald Odor", "Workplace Dynamics Philosopher"],
+        ["Set goals so low that you can't help but achieve them.", "Dr. Minimum Bar", "Achievable Ambition Consultant"],
+        ["The best investment you can make is in yourself — unless you've met yourself.", "Warren's therapist", "Self-Aware Financial Advisor"],
+        ["Hustle until your haters ask if you're hiring, then say you'll look at their CV.", "Chad LinkedIn", "Professional Revenge Strategist"],
+        ["You don't have to be great to start, but you have to start to be great. Or just stay average, that's fine too.", "Mediocre Mike", "Average Achievement Ambassador"],
+        ["If opportunity doesn't knock, build a door. If no one comes, at least you have a door.", "Bob Carpenter", "Literal Opportunity Architect"],
+        ["The difference between try and triumph is just a little umph — and usually someone else's idea.", "Gary Borrowing", "Creative Attribution Manager"],
+      ],
+      wisdom: [
+        ["A wise man once said nothing, and everyone thought he was brilliant.", "Anonymous Wise Man", "Professional Silence Expert"],
+        ["Not all who wander are lost. Some are just looking for the bathroom.", "Frodo Baggins' plumber", "Pipework Philosopher"],
+        ["The greatest teacher is failure — but also, just read the instructions.", "Yoda's handyman", "IKEA Enlightenment Coach"],
+        ["With great power comes a great electricity bill.", "Uncle Ben & Jerry", "Utility Philosopher"],
+        ["Knowledge is knowing a tomato is a fruit. Wisdom is not putting it in a fruit salad. Genius is eating it anyway.", "Professor T. Salad", "Culinary Ontologist"],
+        ["The pen is mightier than the sword, unless the sword is really big.", "Gerard Pointless", "Medieval Stationery Expert"],
+        ["It is better to remain silent and be thought a fool than to open your mouth and confirm it on social media.", "Aristotle's Twitter manager", "Ancient Social Media Consultant"],
+        ["Those who do not learn from history are doomed to repeat it. Those who do are just depressed.", "Dr. Harold Past", "Historical Sadness Specialist"],
+        ["The truth will set you free, but first it will make things really awkward at dinner.", "Dennis Uncomfortable", "Family Gathering Philosopher"],
+        ["Think before you speak. Read before you think. Nap before you read.", "Professor Pillow", "Sequential Consciousness Expert"],
+        ["The wisest person in the room is usually the one who brought snacks.", "Brenda Provisions", "Meeting Survival Strategist"],
+        ["To know what you know and what you do not know — that is true knowledge. To pretend otherwise is just LinkedIn.", "Confucius's social media manager", "Ancient Platform Philosopher"],
+        ["We are all just walking each other home, mostly confused about which direction home is.", "Gerald GPS", "Directional Existentialist"],
+        ["A fool thinks himself to be wise, but a wise man knows himself to be a fool who at least has Google.", "Dr. Search Engine", "Digital Epistemologist"],
+        ["The only true wisdom is knowing you know nothing — which makes job interviews very difficult.", "Socrates' career counselor", "Ancient Employment Advisor"],
+        ["Two roads diverged in a wood and I took the one with better cell service.", "Robert Frost's nephew", "Connectivity-Driven Navigator"],
+        ["You cannot step in the same river twice, mostly because rivers move and your shoes will get wet.", "Heraclitus' podiatrist", "Aquatic Footwear Philosopher"],
+        ["Be yourself. Unless you can be a wizard. Always be a wizard.", "Gandalf's life coach", "Magical Identity Consultant"],
+        ["Judge not, lest ye be judged — but honestly, some people really deserve it.", "Pastor Candid", "Selective Moral Relativist"],
+        ["What we think, we become. I've been thinking about pizza for three days.", "Deepak Chopra's chef", "Culinary Consciousness Coach"],
+        ["An eye for an eye makes the whole world blind — and then nobody can find their glasses.", "Optometrist Gandhi", "Peaceful Vision Consultant"],
+        ["When you look into the abyss, the abyss looks back — and it looks just as confused as you.", "Nietzsche's optician", "Mutual Confusion Specialist"],
+        ["All that glitters is not gold. Sometimes it's just someone's very shiny car.", "Shakespeare's parking attendant", "Automotive Materialism Expert"],
+        ["The unexamined life is not worth living, but the over-examined life is exhausting.", "Dr. Balanced Introspection", "Moderate Self-Reflection Coach"],
+        ["Common sense is like deodorant — the people who need it most never use it.", "Dr. Obvious Hygiene", "Sensory Wisdom Specialist"],
+      ],
+      love: [
+        ["Love is blind, but marriage is a real eye-opener, especially regarding dishes.", "Brenda Sink", "Marital Dishwasher Advocate"],
+        ["Behind every great person is someone wondering what they're having for dinner.", "Chef Antoine Confusion", "Nutritional Philosopher"],
+        ["The best relationships are built on trust, communication, and sharing Netflix passwords.", "Dr. Hulu Johnson", "Streaming Couples Therapist"],
+        ["You had me at 'the food is free'.", "Jerry Snacks", "Networking Event Romantic"],
+        ["Absence makes the heart grow fonder — and the fridge emptier.", "Patricia Hungry", "Long-Distance Snack Philosopher"],
+        ["Love is not finding someone to live with — it's finding someone whose annoying habits you can tolerate.", "Dr. Barry Tolerance", "Couples Irritation Specialist"],
+        ["The course of true love never did run smooth. It mostly runs late and forgets to text.", "Shakespeare's date", "Romantic Punctuality Expert"],
+        ["Love means never having to say you're sorry — which explains a lot of failed relationships.", "Dr. Apology Avoidance", "Conflict Resolution Skeptic"],
+        ["A successful marriage requires falling in love many times, always with the same person — and remembering their coffee order.", "Barista Romance", "Caffeinated Commitment Expert"],
+        ["The best thing to hold onto in life is each other — unless one of you has cold hands.", "Dr. Temperature Check", "Physical Comfort Relationship Expert"],
+        ["Gravitation is not responsible for people falling in love. Neither is Tinder, honestly.", "Einstein's dating profile", "Romantic Physics Specialist"],
+        ["Love is a battlefield. Bring snacks and comfortable shoes.", "Pat Benatar's nutritionist", "Romantic Warfare Survival Expert"],
+        ["Happily ever after is not a destination — it's a subscription service that requires constant renewal.", "Disney's accountant", "Fairy Tale Financial Advisor"],
+        ["The heart wants what it wants — which is mostly attention and a reliable Wi-Fi connection.", "Dr. Digital Romance", "Connected Hearts Consultant"],
+        ["Romance is dead. Actually, it's just on its phone.", "Dr. Screen Time", "Modern Relationship Technologist"],
+        ["Love is patient, love is kind — but love has very strong opinions about the thermostat.", "Pastor Celsius", "Thermal Relationship Counselor"],
+        ["The secret to a happy relationship is a short memory and a long Wi-Fi password.", "Gerald Connection", "Digital Intimacy Architect"],
+        ["Soul mates are real. They're just usually held up in traffic.", "Uber Romance", "Delayed Destiny Coordinator"],
+        ["True love is when your pet likes your partner too.", "Dr. Paws Approval", "Animal-Verified Relationship Expert"],
+        ["A good partner remembers your birthday and forgets your mistakes — or at least pretends to.", "Selective Memory Sandra", "Convenient Amnesia Relationship Coach"],
+        ["Love is like Wi-Fi — invisible but you notice immediately when it's gone.", "Roger Router", "Connectivity Romance Specialist"],
+        ["The key to a happy marriage is separate bathrooms and the same taste in pizza toppings.", "Dr. Domestic Harmony", "Cohabitation Logistics Expert"],
+        ["You know it's real love when you can sit in comfortable silence — or when you've run out of things to argue about.", "Dr. Exhausted Bliss", "Conflict Fatigue Relationship Advisor"],
+        ["Dating is just two people trying to impress each other until they're too comfortable to bother.", "Gerald Sweatpants", "Post-Honeymoon Comfort Specialist"],
+        ["A relationship without trust is like a phone without signal — you can still play games on it but that's about it.", "Dr. Bars McLove", "Connectivity Couples Therapist"],
+      ],
+    };
+
+    const colors = [
+      {bg:'#E6F1FB',cl:'#0C447C'},{bg:'#E1F5EE',cl:'#085041'},
+      {bg:'#FAEEDA',cl:'#633806'},{bg:'#FBEAF0',cl:'#72243E'},
+      {bg:'#EEEDFE',cl:'#3C3489'},{bg:'#FAECE7',cl:'#712B13'},
+    ];
+
+    const categories = Object.keys(quotes);
+    let activeCategory = 'all';
+    let lastIdx = -1;
+
+    function initCats() {
+      const bar = document.getElementById('cats');
+      const all = document.createElement('button');
+      all.className = 'cat-btn active'; all.textContent = 'All';
+      all.onclick = () => setCategory('all', all);
+      bar.appendChild(all);
+      categories.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'cat-btn';
+        b.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+        b.onclick = () => setCategory(c, b);
+        bar.appendChild(b);
+      });
+    }
+
+    function setCategory(cat, el) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      lastIdx = -1;
+      generate();
+    }
+
+    function handleClick() {
+      const btn = document.getElementById('burgerBtn');
+      btn.classList.remove('squish');
+      void btn.offsetWidth;
+      btn.classList.add('squish');
+      generate();
+    }
+
+    function generate() {
+      let pool = activeCategory === 'all'
+        ? categories.flatMap(c => quotes[c])
+        : quotes[activeCategory];
+      let idx;
+      do { idx = Math.floor(Math.random() * pool.length); } while (pool.length > 1 && idx === lastIdx);
+      lastIdx = idx;
+      const [text, name, title] = pool[idx];
+      const col = colors[Math.floor(Math.random() * colors.length)];
+      const initials = name.split(' ').map(w => w[0]).join('').slice(0,2);
+      document.getElementById('qt').textContent = text;
+      document.getElementById('an').textContent = '— ' + name;
+      document.getElementById('at').textContent = title;
+      document.getElementById('qa').style.display = 'flex';
+      const av = document.getElementById('av');
+      av.textContent = initials;
+      av.style.background = col.bg;
+      av.style.color = col.cl;
+    }
+
+    initCats();
+    generate();
+  </script>
+</body>
+</html>
